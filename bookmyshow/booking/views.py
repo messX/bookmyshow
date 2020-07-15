@@ -68,24 +68,15 @@ def put_seat(request):
         show = Show.objects.get(id=request.POST.get('show_id'))
         seat = Seat(no=no, seat_type=seat_type, show=show)
         seat.save()
+        # save in seatplan
+        show_seat = ShowSheatMapping(seat=seat, show=show)
+        show_seat.save()
         return HttpResponse(
-            json.dumps({'status': True, 'id': seat.id}), content_type='application/json')
+                json.dumps({'status': True, 'id': seat.id}), content_type='application/json')
     except Exception as err:
         return HttpResponse(
             json.dumps({'status': False}), content_type='application/json')
 
-def put_seat_plan(request):
-    try:
-        show = Show.objects.get(id=request.POST.get('show_id'))
-        for _seat in Seat.objects.filter(show=show):
-            show_seat = ShowSheatMapping(seat=_seat)
-            show_seat.save()
-        return HttpResponse(
-            json.dumps({'status': True}), content_type='application/json')
-    except Exception as err:
-        print(err)
-        return HttpResponse(
-            json.dumps({'status': False}), content_type='application/json')
 
 def book(request):
     try:
